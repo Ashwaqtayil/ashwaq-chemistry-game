@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧪 لعبة العناصر الكيميائية - أ. أشواق الخديدي</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Tahoma', 'Arial', sans-serif;
+  }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6a3093 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-x: hidden;
+  }
+
+  .bubble {
+    position: fixed;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    animation: float 15s infinite ease-in-out;
+    pointer-events: none;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-100px) rotate(180deg); }
+  }
+
+  .container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 25px;
+    padding: 30px 25px;
+    max-width: 620px;
+    width: 100%;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 10;
+    animation: fadeIn 0.6s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h1 {
+    text-align: center;
+    color: #2a5298;
+    margin-bottom: 5px;
+    font-size: 1.8rem;
+  }
+
+  .teacher-badge {
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 8px 15px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    display: inline-block;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+  }
+  .teacher-badge::before {
+    content: '👩‍🏫 ';
+    font-size: 1.1rem;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+
+  .name-input-box {
+    margin: 20px 0;
+    text-align: right;
+  }
+  .name-input-box label {
+    display: block;
+    color: #2a5298;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1rem;
+  }
+  .name-input-box input {
+    width: 100%;
+    padding: 15px 18px;
+    font-size: 1.05rem;
+    font-family: inherit;
+    border: 3px solid #667eea;
+    border-radius: 15px;
+    background: #f8f9ff;
+    color: #333;
+    outline: none;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+  .name-input-box input:focus {
+    border-color: #764ba2;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    transform: scale(1.01);
+  }
+  .name-input-box input::placeholder {
+    color: #aaa;
+    font-size: 0.95rem;
+  }
+
+  .welcome-badge {
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+    animation: welcomePulse 3s infinite;
+  }
+  @keyframes welcomePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+
+  .mode-selector {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .mode-btn {
+    padding: 10px 18px;
+    border: 2px solid #667eea;
+    background: white;
+    color: #667eea;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+  }
+  .mode-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+  }
+  .mode-btn:hover { transform: translateY(-2px); }
+
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-box {
+    flex: 1;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 12px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+  .stat-box .label {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    margin-bottom: 4px;
+  }
+  .stat-box .value {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  .stat-box.score { background: linear-gradient(135deg, #f093fb, #f5576c); box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4); }
+  .stat-box.streak { background: linear-gradient(135deg, #4facfe, #00f2fe); box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4); }
+
+  .progress-container {
+    background: #e0e0e0;
+    height: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    width: 0%;
+    transition: width 0.5s ease;
+    border-radius: 10px;
+  }
+
+  .question-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 20px;
+    padding: 25px 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid #2a5298;
+  }
+  .question-card::before {
+    content: '⚗️';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    font-size: 3rem;
+    opacity: 0.15;
+  }
+  .question-card.similar-card {
+    border-color: #f5576c;
+    background: linear-gradient(135deg, #fff5f7 0%, #ffe0e6 100%);
+  }
+  .question-card.similar-card::before {
+    content: '⚠️';
+    opacity: 0.25;
+  }
+
+  .mode-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  .mode-badge.similar-badge {
+    background: linear-gradient(135deg, #f5576c, #f093fb);
+    animation: badgePulse 1.5s infinite;
+  }
+  @keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .question-text {
+    color: #555;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    font-weight: bold;
+  }
+  .question-display {
+    font-weight: bold;
+    color: #2a5298;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    animation: pulse 2s infinite;
+    word-break: break-word;
+  }
+  .question-display.symbol {
+    font-size: 4rem;
+    letter-spacing: 3px;
+  }
+  .question-display.name {
+    font-size: 2.2rem;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .option-btn {
+    padding: 18px 12px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    background: white;
+    color: #333;
+    border: 3px solid #667eea;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    word-break: break-word;
+  }
+  .option-btn.symbol-option {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+  }
+  .option-btn:hover:not(:disabled) {
+    background: #667eea;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  }
+  .option-btn:disabled { cursor: not-allowed; }
+  .option-btn.correct {
+    background: linear-gradient(135deg, #11998e, #38ef7d) !important;
+    color: white !important;
+    border-color: #11998e !important;
+    animation: correctAnim 0.5s ease;
+  }
+  .option-btn.wrong {
+    background: linear-gradient(135deg, #eb3349, #f45c43) !important;
+    color: white !important;
+    border-color: #eb3349 !important;
+    animation: shake 0.5s ease;
+  }
+  @keyframes correctAnim {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+
+  .feedback {
+    text-align: center;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1.05rem;
+    margin-bottom: 15px;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  .feedback.correct {
+    background: #d4edda;
+    color: #155724;
+    border: 2px solid #11998e;
+  }
+  .feedback.wrong {
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #eb3349;
+  }
+
+  .auto-next-bar {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .auto-next-bar.active { opacity: 1; }
+  .auto-next-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    width: 0%;
+    border-radius: 10px;
+  }
+  .auto-next-bar.active .auto-next-fill {
+    animation: fillBar 0.9s linear forwards;
+  }
+  @keyframes fillBar {
+    from { width: 0%; }
+    to { width: 100%; }
+  }
+
+  .start-screen, .end-screen {
+    text-align: center;
+    padding: 20px;
+  }
+  .start-screen .icon {
+    font-size: 5rem;
+    margin-bottom: 15px;
+    animation: bounce 2s infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+  .start-screen h2, .end-screen h2 {
+    color: #2a5298;
+    margin-bottom: 15px;
+    font-size: 1.6rem;
+  }
+  .start-screen p, .end-screen p {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.7;
+  }
+  .start-btn {
+    padding: 18px 45px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    box-shadow: 0 8px 25px rgba(17, 153, 142, 0.5);
+    margin-top: 10px;
+  }
+  .start-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(17, 153, 142, 0.6);
+  }
+  .start-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .end-screen .trophy {
+    font-size: 5rem;
+    margin-bottom: 15px;
+    animation: bounce 2s infinite;
+  }
+
+  .thank-you-box {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 3px solid #f5576c;
+    box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);
+  }
+  .thank-you-box .student-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #764ba2;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .thank-you-box .thanks-text {
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .final-stats {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 25px 0;
+    flex-wrap: wrap;
+  }
+  .final-stat {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 18px 22px;
+    border-radius: 15px;
+    min-width: 110px;
+  }
+  .final-stat .num {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  .final-stat .lbl {
+    font-size: 0.85rem;
+    opacity: 0.9;
+  }
+  .final-stat.grade {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(245, 87, 108, 0.5);
+  }
+  .message {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2a5298;
+    margin: 15px 0;
+  }
+
+  .elements-info {
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    line-height: 1.8;
+  }
+
+  .teacher-signature {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px dashed #c3cfe2;
+    color: #764ba2;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+  .teacher-signature::before {
+    content: '✍️ ';
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 480px) {
+    .container { padding: 20px 15px; }
+    h1 { font-size: 1.4rem; }
+    .teacher-badge { font-size: 0.85rem; padding: 6px 10px; }
+    .question-display.symbol { font-size: 3rem; }
+    .question-display.name { font-size: 1.6rem; }
+    .option-btn { padding: 14px 8px; font-size: 0.95rem; }
+    .option-btn.symbol-option { font-size: 1.3rem; }
+    .stat-box .value { font-size: 1.2rem; }
+    .mode-btn { padding: 8px 12px; font-size: 0.8rem; }
+    .thank-you-box .student-name { font-size: 1.2rem; }
+    .final-stat { min-width: 90px; padding: 14px 16px; }
+    .final-stat .num { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bubble" style="width:100px;height:100px;top:10%;left:5%;"></div>
+<div class="bubble" style="width:60px;height:60px;top:70%;left:10%;animation-delay:2s;"></div>
+<div class="bubble" style="width:120px;height:120px;top:20%;right:5%;animation-delay:4s;"></div>
+<div class="bubble" style="width:80px;height:80px;bottom:10%;right:15%;animation-delay:6s;"></div>
+
+<div class="container">
+  <h1>🧪 لعبة العناصر الكيميائية</h1>
+  <div class="teacher-badge">إعداد المعلمة: أ. أشواق الخديدي</div>
+  <p class="subtitle">تعرّفي على أسماء ورموز العناصر الكيميائية</p>
+
+  <!-- شاشة البداية -->
+  <div id="startScreen" class="start-screen">
+    <div class="icon">⚗️</div>
+    <h2>مرحباً بكِ في عالم الكيمياء!</h2>
+    <p>
+      اختاري نمط اللعب المفضل لديكِ:<br>
+      🔹 <b>وضع مختلط</b>: تبادل تلقائي بين الأسئلة<br>
+      🔹 <b>رمز ← اسم</b>: يظهر الرمز وتختارين الاسم<br>
+      🔹 <b>اسم ← رمز</b>: يظهر الاسم وتختارين الرمز
+    </p>
+
+    <div class="name-input-box">
+      <label for="studentName">✍️ اكتبي اسمكِ هنا:</label>
+      <input
+        type="text"
+        id="studentName"
+        placeholder="مثال: نورة محمد"
+        maxlength="40"
+        autocomplete="off"
+      >
+    </div>
+
+    <button class="start-btn" id="startBtn" onclick="startGame()" disabled>
+      🚀 ابدئي اللعب
+    </button>
+    <p class="elements-info">
+      📚 عدد الأسئلة: <b>50</b> سؤالاً (36 عنصر + 14 سؤال تمييز)<br>
+      الدرجة من <b>50</b> &nbsp;|&nbsp; ⚠️ أسئلة خاصة للعناصر المتشابهة
+    </p>
+    <div class="teacher-signature">من إعداد المعلمة: أ. أشواق الخديدي</div>
+  </div>
+
+  <!-- شاشة اللعبة -->
+  <div id="gameScreen" class="hidden">
+
+    <div class="welcome-badge" id="welcomeBadge">🌟 بالتوفيق يا طالبة</div>
+
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="mixed" onclick="setMode('mixed')">🔀 مختلط</button>
+      <button class="mode-btn" data-mode="symbol-to-name" onclick="setMode('symbol-to-name')">🔤 رمز ← اسم</button>
+      <button class="mode-btn" data-mode="name-to-symbol" onclick="setMode('name-to-symbol')">📛 اسم ← رمز</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="label">السؤال</div>
+        <div class="value"><span id="qNum">1</span>/<span id="qTotal">50</span></div>
+      </div>
+      <div class="stat-box score">
+        <div class="label">الإجابات الصحيحة</div>
+        <div class="value"><span id="scoreVal">0</span>/50</div>
+      </div>
+      <div class="stat-box streak">
+        <div class="label">🔥 متتالية</div>
+        <div class="value" id="streakVal">0</div>
+      </div>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <div class="mode-badge" id="modeBadge">🔤 رمز ← اسم</div>
+      <div class="question-text" id="questionText">ما هو اسم العنصر الذي رمزه:</div>
+      <div class="question-display symbol" id="displayValue">H</div>
+    </div>
+
+    <div class="options" id="optionsContainer"></div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="auto-next-bar" id="autoNextBar">
+      <div class="auto-next-fill"></div>
+    </div>
+
+    <div class="teacher-signature">من إعداد المعلمة: أ. أشواق الخديدي</div>
+  </div>
+
+  <!-- شاشة النهاية -->
+  <div id="endScreen" class="end-screen hidden">
+    <div class="trophy" id="trophyIcon">🏆</div>
+    <h2 id="endTitle">أحسنتِ!</h2>
+
+    <div class="thank-you-box">
+      <span class="student-name" id="thankYouName">🌟</span>
+      <p class="thanks-text" id="thankYouText"></p>
+    </div>
+
+    <p class="message" id="endMessage"></p>
+
+    <div class="final-stats">
+      <div class="final-stat grade">
+        <div class="num" id="finalGrade">0</div>
+        <div class="lbl">الدرجة من 50</div>
+      </div>
+      <div class="final-stat">
+        <div class="num" id="finalCorrect">0</div>
+        <div class="lbl">إجابات صحيحة</div>
+      </div>
+      <div class="final-stat">
+        <div class="num" id="finalAccuracy">0%</div>
+        <div class="lbl">النسبة</div>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="restartGame()">🔄 العبي مرة أخرى</button>
+    <div class="teacher-signature">من إعداد المعلمة: أ. أشواق الخديدي</div>
+  </div>
+</div>
+
+<script>
+  // 📚 قاعدة بيانات العناصر (36 عنصراً)
+  const elements = [
+    { symbol: 'H',  name: 'الهيدروجين' },
+    { symbol: 'He', name: 'الهيليوم' },
+    { symbol: 'Li', name: 'الليثيوم' },
+    { symbol: 'Be', name: 'البيريليوم' },
+    { symbol: 'B',  name: 'البورون' },
+    { symbol: 'C',  name: 'الكربون' },
+    { symbol: 'N',  name: 'النيتروجين' },
+    { symbol: 'O',  name: 'الأكسجين' },
+    { symbol: 'F',  name: 'الفلور' },
+    { symbol: 'Ne', name: 'النيون' },
+    { symbol: 'Na', name: 'الصوديوم' },
+    { symbol: 'Mg', name: 'المغنيسيوم' },
+    { symbol: 'Al', name: 'الألومنيوم' },
+    { symbol: 'Si', name: 'السيليكون' },
+    { symbol: 'P',  name: 'الفوسفور' },
+    { symbol: 'S',  name: 'الكبريت' },
+    { symbol: 'Cl', name: 'الكلور' },
+    { symbol: 'Ar', name: 'الأرجون' },
+    { symbol: 'K',  name: 'البوتاسيوم' },
+    { symbol: 'Ca', name: 'الكالسيوم' },
+    { symbol: 'Ti', name: 'التيتانيوم' },
+    { symbol: 'Cr', name: 'الكروم' },
+    { symbol: 'Mn', name: 'المنجنيز' },
+    { symbol: 'Fe', name: 'الحديد' },
+    { symbol: 'Co', name: 'الكوبالت' },
+    { symbol: 'Ni', name: 'النيكل' },
+    { symbol: 'Cu', name: 'النحاس' },
+    { symbol: 'Zn', name: 'الزنك' },
+    { symbol: 'Br', name: 'البروم' },
+    { symbol: 'Ag', name: 'الفضة' },
+    { symbol: 'Sn', name: 'القصدير' },
+    { symbol: 'I',  name: 'اليود' },
+    { symbol: 'Ba', name: 'الباريوم' },
+    { symbol: 'Au', name: 'الذهب' },
+    { symbol: 'Hg', name: 'الزئبق' },
+    { symbol: 'Pb', name: 'الرصاص' }
+  ];
+
+  // 🎯 الأسئلة الإضافية للعناصر المتشابهة (14 سؤالاً)
+  const similarQuestions = [
+    // مجموعة N / Na / Ne / Ni
+    { symbol: 'N',  name: 'النيتروجين', group: ['النيتروجين', 'الصوديوم', 'النيون', 'النيكل'] },
+    { symbol: 'Na', name: 'الصوديوم',   group: ['النيتروجين', 'الصوديوم', 'النيون', 'النيكل'] },
+    { symbol: 'Ne', name: 'النيون',     group: ['النيتروجين', 'الصوديوم', 'النيون', 'النيكل'] },
+    { symbol: 'Ni', name: 'النيكل',     group: ['النيتروجين', 'الصوديوم', 'النيون', 'النيكل'] },
+
+    // مجموعة C / Cl / Ca / Cr
+    { symbol: 'C',  name: 'الكربون',    group: ['الكربون', 'الكلور', 'الكالسيوم', 'الكروم'] },
+    { symbol: 'Cl', name: 'الكلور',     group: ['الكربون', 'الكلور', 'الكالسيوم', 'الكروم'] },
+    { symbol: 'Ca', name: 'الكالسيوم',  group: ['الكربون', 'الكلور', 'الكالسيوم', 'الكروم'] },
+    { symbol: 'Cr', name: 'الكروم',     group: ['الكربون', 'الكلور', 'الكالسيوم', 'الكروم'] },
+
+    // مجموعة Co / Cu
+    { symbol: 'Co', name: 'الكوبالت',   group: ['الكوبالت', 'النحاس', 'الكروم', 'الكالسيوم'] },
+    { symbol: 'Cu', name: 'النحاس',     group: ['الكوبالت', 'النحاس', 'الكروم', 'الكالسيوم'] },
+
+    // مجموعة B / Ba / Be / Br
+    { symbol: 'B',  name: 'البورون',    group: ['البورون', 'الباريوم', 'البيريليوم', 'البروم'] },
+    { symbol: 'Ba', name: 'الباريوم',   group: ['البورون', 'الباريوم', 'البيريليوم', 'البروم'] },
+    { symbol: 'Be', name: 'البيريليوم', group: ['البورون', 'الباريوم', 'البيريليوم', 'البروم'] },
+    { symbol: 'Br', name: 'البروم',     group: ['البورون', 'الباريوم', 'البيريليوم', 'البروم'] }
+  ];
+
+  const AUTO_NEXT_DELAY = 900; // ⚡ 0.9 ثانية
+
+  let questions = [];
+  let currentIndex = 0;
+  let correctCount = 0;
+  let streak = 0;
+  let maxStreak = 0;
+  let answered = false;
+  let currentMode = 'mixed';
+  let autoNextTimer = null;
+  let studentName = '';
+  let totalQuestions = 0;
+
+  const nameInput = document.getElementById('studentName');
+  const startBtn = document.getElementById('startBtn');
+
+  nameInput.addEventListener('input', () => {
+    const val = nameInput.value.trim();
+    startBtn.disabled = val.length < 2;
+  });
+
+  nameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !startBtn.disabled) {
+      startGame();
+    }
+  });
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function pickQuestionType() {
+    if (currentMode === 'mixed') {
+      return Math.random() < 0.5 ? 'symbol-to-name' : 'name-to-symbol';
+    }
+    return currentMode;
+  }
+
+  // 🎯 توليد الأسئلة (36 عنصر + 14 تمييز = 50 سؤال)
+  function generateQuestions() {
+    const allQuestions = [];
+
+    // 1) 36 سؤالاً للعناصر الأساسية
+    const shuffledElements = shuffle(elements);
+    shuffledElements.forEach(item => {
+      const type = pickQuestionType();
+      const distractors = shuffle(elements.filter(e => 
+        (type === 'symbol-to-name' ? e.name !== item.name : e.symbol !== item.symbol)
+      )).slice(0, 3).map(e => type === 'symbol-to-name' ? e.name : e.symbol);
+      
+      const options = shuffle([
+        type === 'symbol-to-name' ? item.name : item.symbol,
+        ...distractors
+      ]);
+
+      allQuestions.push({ ...item, type, options, isSimilar: false });
+    });
+
+    // 2) 14 سؤال تمييز العناصر المتشابهة
+    const shuffledSimilar = shuffle(similarQuestions);
+    shuffledSimilar.forEach(item => {
+      const type = pickQuestionType();
+      
+      let options;
+      if (type === 'symbol-to-name') {
+        options = shuffle([...item.group]);
+      } else {
+        const symbolGroup = item.group.map(name => {
+          const el = elements.find(e => e.name === name);
+          return el ? el.symbol : name;
+        });
+        options = shuffle(symbolGroup);
+      }
+
+      allQuestions.push({ 
+        symbol: item.symbol, 
+        name: item.name, 
+        type, 
+        options, 
+        isSimilar: true 
+      });
+    });
+
+    // خلط كل الأسئلة
+    return shuffle(allQuestions);
+  }
+
+  function startGame() {
+    const val = nameInput.value.trim();
+    if (val.length < 2) return;
+
+    studentName = val;
+
+    questions = generateQuestions();
+    totalQuestions = questions.length;
+    currentIndex = 0;
+    correctCount = 0;
+    streak = 0;
+    maxStreak = 0;
+
+    document.getElementById('qTotal').textContent = totalQuestions;
+    document.querySelector('.stat-box.score .value').innerHTML = 
+      `<span id="scoreVal">0</span>/${totalQuestions}`;
+    document.getElementById('welcomeBadge').textContent = `🌟 بالتوفيق يا ${studentName}`;
+
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('endScreen').classList.add('hidden');
+    document.getElementById('gameScreen').classList.remove('hidden');
+
+    showQuestion();
+  }
+
+  function showQuestion() {
+    answered = false;
+
+    if (autoNextTimer) {
+      clearTimeout(autoNextTimer);
+      autoNextTimer = null;
+    }
+
+    document.getElementById('autoNextBar').classList.remove('active');
+
+    const q = questions[currentIndex];
+
+    document.getElementById('qNum').textContent = currentIndex + 1;
+    document.getElementById('scoreVal').textContent = correctCount;
+    document.getElementById('streakVal').textContent = streak;
+
+    const displayEl = document.getElementById('displayValue');
+    const textEl = document.getElementById('questionText');
+    const badgeEl = document.getElementById('modeBadge');
+    const cardEl = document.getElementById('questionCard');
+
+    if (q.isSimilar) {
+      cardEl.classList.add('similar-card');
+      badgeEl.classList.add('similar-badge');
+    } else {
+      cardEl.classList.remove('similar-card');
+      badgeEl.classList.remove('similar-badge');
+    }
+
+    if (q.type === 'symbol-to-name') {
+      badgeEl.textContent = q.isSimilar ? '⚠️ تمييز العناصر المتشابهة' : '🔤 رمز ← اسم';
+      textEl.textContent = q.isSimilar 
+        ? '⚠️ انتبهي! ما هو اسم العنصر الذي رمزه:' 
+        : 'ما هو اسم العنصر الذي رمزه:';
+      displayEl.textContent = q.symbol;
+      displayEl.className = 'question-display symbol';
+    } else {
+      badgeEl.textContent = q.isSimilar ? '⚠️ تمييز العناصر المتشابهة' : '📛 اسم ← رمز';
+      textEl.textContent = q.isSimilar
+        ? '⚠️ انتبهي! ما هو رمز العنصر التالي:'
+        : 'ما هو رمز العنصر التالي:';
+      displayEl.textContent = q.name;
+      displayEl.className = 'question-display name';
+    }
+
+    const progress = (currentIndex / totalQuestions) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn' + (q.type === 'name-to-symbol' ? ' symbol-option' : '');
+      btn.textContent = opt;
+      btn.onclick = () => checkAnswer(btn, opt, q);
+      container.appendChild(btn);
+    });
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback';
+    fb.textContent = '';
+  }
+
+  function checkAnswer(btn, selected, q) {
+    if (answered) return;
+    answered = true;
+
+    const allBtns = document.querySelectorAll('.option-btn');
+    const fb = document.getElementById('feedback');
+    const correctAnswer = q.type === 'symbol-to-name' ? q.name : q.symbol;
+
+    if (selected === correctAnswer) {
+      btn.classList.add('correct');
+      correctCount++;
+      streak++;
+      if (streak > maxStreak) maxStreak = streak;
+
+      fb.className = 'feedback correct';
+      if (q.isSimilar) {
+        fb.textContent = `🎯 ممتاز! ميّزتِ العنصر المتشابه بشكل صحيح يا ${studentName}!`;
+      } else if (streak >= 3) {
+        fb.textContent = `✅ أحسنتِ يا ${studentName}! +1 درجة (🔥 متتالية ${streak})`;
+      } else {
+        fb.textContent = `✅ أحسنتِ يا ${studentName}! +1 درجة`;
+      }
+    } else {
+      btn.classList.add('wrong');
+      streak = 0;
+      fb.className = 'feedback wrong';
+      fb.textContent = `❌ الإجابة الصحيحة: ${correctAnswer}`;
+
+      allBtns.forEach(b => {
+        if (b.textContent === correctAnswer) b.classList.add('correct');
+      });
+    }
+
+    allBtns.forEach(b => b.disabled = true);
+    document.getElementById('scoreVal').textContent = correctCount;
+    document.getElementById('streakVal').textContent = streak;
+
+    scheduleAutoNext();
+  }
+
+  function scheduleAutoNext() {
+    const bar = document.getElementById('autoNextBar');
+    bar.classList.remove('active');
+    void bar.offsetWidth;
+    bar.classList.add('active');
+
+    autoNextTimer = setTimeout(() => {
+      goToNext();
+    }, AUTO_NEXT_DELAY);
+  }
+
+  function goToNext() {
+    if (autoNextTimer) {
+      clearTimeout(autoNextTimer);
+      autoNextTimer = null;
+    }
+
+    document.getElementById('autoNextBar').classList.remove('active');
+
+    currentIndex++;
+    if (currentIndex >= totalQuestions) {
+      endGame();
+    } else {
+      showQuestion();
+    }
+  }
+
+  function endGame() {
+    document.getElementById('gameScreen').classList.add('hidden');
+    document.getElementById('endScreen').classList.remove('hidden');
+
+    const accuracy = Math.round((correctCount / totalQuestions) * 100);
+    const grade = correctCount;
+
+    document.getElementById('finalGrade').textContent = grade;
+    document.getElementById('finalCorrect').textContent = correctCount + '/' + totalQuestions;
+    document.getElementById('finalAccuracy').textContent = accuracy + '%';
+    document.getElementById('thankYouName').textContent = `🌟 ${studentName}`;
+
+    let title, message, trophy, thanksText;
+
+    if (accuracy >= 90) {
+      trophy = '🏆'; title = 'مذهلة! أداء استثنائي!';
+      thanksText = `شكراً لكِ يا ${studentName} على أدائك الرائع! أتقنتِ رموز وأسماء العناصر الكيميائية بامتياز، حتى العناصر المتشابهة! استمري على هذا التفوق 🌟`;
+      message = `أطول سلسلة صحيحة: ${maxStreak} 🔥`;
+    } else if (accuracy >= 75) {
+      trophy = '🥇'; title = 'رائعة جداً!';
+      thanksText = `شكراً لكِ يا ${studentName} على مجهودك المميز! أداؤك ممتاز، وتمييزك للعناصر المتشابهة جيد جداً. واصلي التقدم 💪`;
+      message = `أطول سلسلة صحيحة: ${maxStreak} 🔥`;
+    } else if (accuracy >= 60) {
+      trophy = '🥈'; title = 'جيد جداً!';
+      thanksText = `شكراً لكِ يا ${studentName} على مشاركتك! نتيجتك جيدة، ومع مزيد من المراجعة للعناصر المتشابهة ستصلين للإتقان 📚`;
+      message = 'ركّزي على تمييز العناصر المتشابهة في الرموز!';
+    } else if (accuracy >= 40) {
+      trophy = '🥉'; title = 'بداية جيدة!';
+      thanksText = `شكراً لكِ يا ${studentName} على محاولتك! لا بأس، ركّزي على حفظ رموز العناصر المتشابهة وحاولي مرة أخرى 🌱`;
+      message = 'ركّزي على العناصر المتشابهة: N/Na/Ne, C/Cl/Ca/Cr';
+    } else {
+      trophy = '📚'; title = 'لا بأس، التعلّم رحلة!';
+      thanksText = `شكراً لكِ يا ${studentName} على اجتهادك! تذكري أن كل محاولة تقربك من الإتقان. أعيدي المحاولة وستتحسن نتيجتك بلا شك 🌟`;
+      message = 'ركّزي على حفظ رموز العناصر وحاولي مرة أخرى!';
+    }
+
+    document.getElementById('trophyIcon').textContent = trophy;
+    document.getElementById('endTitle').textContent = title;
+    document.getElementById('endMessage').textContent = message;
+    document.getElementById('thankYouText').textContent = thanksText;
+  }
+
+  function restartGame() {
+    if (autoNextTimer) {
+      clearTimeout(autoNextTimer);
+      autoNextTimer = null;
+    }
+    document.getElementById('endScreen').classList.add('hidden');
+    document.getElementById('startScreen').classList.remove('hidden');
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('studentName').value = '';
+    document.getElementById('startBtn').disabled = true;
+    nameInput.focus();
+  }
+
+  function setMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+
+    if (autoNextTimer) {
+      clearTimeout(autoNextTimer);
+      autoNextTimer = null;
+    }
+
+    questions = generateQuestions();
+    totalQuestions = questions.length;
+    currentIndex = 0;
+    correctCount = 0;
+    streak = 0;
+    maxStreak = 0;
+
+    document.getElementById('qTotal').textContent = totalQuestions;
+    document.querySelector('.stat-box.score .value').innerHTML = 
+      `<span id="scoreVal">0</span>/${totalQuestions}`;
+
+    showQuestion();
+  }
+</script>
+
+</body>
+</html>
